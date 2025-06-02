@@ -8,6 +8,13 @@ export default defineConfig({
     host: true,
     strictPort: false,
     port: 5179,
-    allowedHosts: ['.ngrok-free.app']
+    allowedHosts: ['.ngrok-free.app'],
+    proxy: {
+      '/api/submit': {
+        target: 'https://script.google.com/macros/s/AKfycbw-ukzXvkbBRRwZuzNn85Xo817oIYqHsTVpCjVY5IpD_hpqASAizevc-WJAg288psdvZw/exec',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api\/submit/, '')
+      }
+    }
   }
 });
