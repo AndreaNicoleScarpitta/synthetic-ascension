@@ -1,5 +1,4 @@
-// C:\Users\andys\Documents\SyntheticAscension\SyntheticAscensionClean\frontend\src\components\LeadCaptureModal.jsx
-
+// src/components/LeadCaptureModal.jsx
 import React, { useState, useEffect } from "react";
 import {
   Button,
@@ -25,7 +24,7 @@ export default function LeadCaptureModal() {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const toast = useToast();
 
-  // Local form state for filling inputs + honeypot
+  // Local form state for controlling inputs and honeypot
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
@@ -37,8 +36,7 @@ export default function LeadCaptureModal() {
     "bot-field": "",
   });
 
-  // After a successful Netlify form submission, Netlify will redirect to “?success=true”,
-  // so we listen for that and show a toast.
+  // Show a toast when the URL contains ?success=true
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     if (params.get("success") === "true") {
@@ -49,7 +47,7 @@ export default function LeadCaptureModal() {
         duration: 4000,
         isClosable: true,
       });
-      // Remove the query param so it doesn’t re-trigger on page reload
+      // Remove the query parameter so it doesn't show again on reload
       params.delete("success");
       const newUrl =
         window.location.origin + window.location.pathname + params.toString();
@@ -85,14 +83,7 @@ export default function LeadCaptureModal() {
           </ModalHeader>
           <ModalCloseButton />
 
-          {/*
-            Netlify Forms requires:
-            • name="lead-capture"          → unique form identifier
-            • method="POST"               → form uses POST
-            • data-netlify="true"         → Netlify scans this form
-            • netlify-honeypot="bot-field"→ hidden honeypot for spam
-            • action="?success=true"      → redirect with ?success=true on success
-          */}
+          {/* Netlify Forms integration */}
           <form
             name="lead-capture"
             method="POST"
@@ -100,11 +91,9 @@ export default function LeadCaptureModal() {
             netlify-honeypot="bot-field"
             action="?success=true"
           >
-            {/* 
-              REQUIRED hidden fields for Netlify Forms.
-              • form-name must match name="lead-capture"
-            */}
+            {/* Hidden input to identify the form to Netlify */}
             <input type="hidden" name="form-name" value="lead-capture" />
+            {/* Honeypot field */}
             <div style={{ display: "none" }}>
               <label>
                 Don’t fill this out if you’re human:{" "}
@@ -231,7 +220,6 @@ export default function LeadCaptureModal() {
                 >
                   Cancel
                 </Button>
-                {/* Change to type="submit" so the browser POSTS to Netlify */}
                 <Button
                   type="submit"
                   bg="#805AD5"
