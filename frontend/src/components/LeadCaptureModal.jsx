@@ -12,152 +12,179 @@ import {
   FormLabel,
   Input,
   Textarea,
-  FormErrorMessage,
+  Select,
   useDisclosure,
   useToast,
-  Stack,
-  Text
 } from '@chakra-ui/react';
 
 export default function LeadCaptureModal() {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const toast = useToast();
 
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [org, setOrg] = useState('');
-  const [role, setRole] = useState('');
-  const [interest, setInterest] = useState('');
-  const [projectDesc, setProjectDesc] = useState('');
-  const [feedbackNeeds, setFeedbackNeeds] = useState('');
-  const [touched, setTouched] = useState(false);
+  const [formData, setFormData] = useState({
+    fullName: '',
+    email: '',
+    role: '',
+    organization: '',
+    motivation: '',
+    useCases: '',
+    notes: '',
+  });
 
-  const isEmailValid = email.includes('@');
+  const [submitting, setSubmitting] = useState(false);
 
-  const handleSubmit = () => {
-    setTouched(true);
-    if (!isEmailValid || !name || !role || !interest) return;
+  const scriptURL =
+    'https://script.google.com/macros/s/AKfycbyhGqZRvB4_2KhF-1mRplFf5hLpJIzeTvFX0M1bjDblRTNJEj7EXN2TztK_452tRClC/exec';
 
-    console.log({
-      name,
-      email,
-      org,
-      role,
-      interest,
-      projectDesc,
-      feedbackNeeds
-    });
+  const handleChange = (e) => {
+    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  };
 
-    toast({
-      title: 'Thanks for joining the waitlist!',
-      description: "We're reviewing submissions and will follow up with access details.",
-      status: 'success',
-      duration: 6000,
-      isClosable: true,
-    });
+  const handleSubmit = async () => {
+    setSubmitting(true);
 
-    onClose();
-    setName('');
-    setEmail('');
-    setOrg('');
-    setRole('');
-    setInterest('');
-    setProjectDesc('');
-    setFeedbackNeeds('');
-    setTouched(false);
+    try {
+      const form = new FormData();
+      Object.entries(formData).forEach(([key, value]) => form.append(key, value));
+
+      const res = await fetch(scriptURL, {
+        method: 'POST',
+        mode: 'no-cors',
+        body: form,
+      });
+
+      toast({
+        title: 'Submission successful!',
+        description: "You're officially on the waitlist.",
+        status: 'success',
+        duration: 5000,
+        isClosable: true,
+      });
+
+      setFormData({
+        fullName: '',
+        email: '',
+        role: '',
+        organization: '',
+        motivation: '',
+        useCases: '',
+        notes: '',
+      });
+
+      onClose();
+    } catch (err) {
+      toast({
+        title: 'Submission failed.',
+        description: 'Something went wrong. Please try again later.',
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
+      });
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
     <>
       <Button
+        colorScheme="purple"
+        bg="#6B46C1"
+        _hover={{ bg: '#553C9A' }}
         onClick={onOpen}
-        bg="#6C4DFF"
-        color="white"
-        _hover={{ bg: '#5939e6' }}
-        px={6}
-        py={2}
-        rounded="2xl"
-        fontWeight="medium"
       >
         Join Waitlist
       </Button>
 
-      <Modal isOpen={isOpen} onClose={onClose} size="xl" isCentered>
+      <Modal isOpen={isOpen} onClose={onClose} size="lg" isCentered>
         <ModalOverlay />
-        <ModalContent maxW="2xl" p={4}>
-          <ModalHeader fontWeight="semibold" fontSize="xl">
-            Welcome to Synthetic Ascension
-          </ModalHeader>
+        <ModalContent>
+          <ModalHeader>Join the Synthetic Ascension Waitlist</ModalHeader>
           <ModalCloseButton />
-          <ModalBody>
-            <Text fontSize="sm" color="gray.600" mb={6}>
-              We’re building a research-grade platform for generating, evaluating, and explaining synthetic EHR data.
-              This form helps us understand who you are and how we can support you—especially if you're an early-stage founder or solo researcher.
-            </Text>
+          <ModalBody pb={6}>
+            <FormControl isRequired mb={3}>
+              <FormLabel>Full Name</FormLabel>
+              <Input
+                name="fullName"
+                placeholder="Jane Doe"
+                value={formData.fullName}
+                onChange={handleChange}
+              />
+            </FormControl>
 
-            <Stack spacing={4}>
-              <FormControl isRequired isInvalid={!name && touched}>
-                <FormLabel>Full Name</FormLabel>
-                <Input placeholder="Jane Doe" value={name} onChange={(e) => setName(e.target.value)} />
-                <FormErrorMessage>Name is required.</FormErrorMessage>
-              </FormControl>
+            <FormControl isRequired mb={3}>
+              <FormLabel>Email Address</FormLabel>
+              <Input
+                name="email"
+                type="email"
+                placeholder="jane@example.com"
+                value={formData.email}
+                onChange={handleChange}
+              />
+            </FormControl>
 
-              <FormControl isRequired isInvalid={!isEmailValid && touched}>
-                <FormLabel>Email</FormLabel>
-                <Input type="email" placeholder="you@project.org" value={email} onChange={(e) => setEmail(e.target.value)} />
-                <FormErrorMessage>Valid email required.</FormErrorMessage>
-              </FormControl>
+            <FormControl mb={3}>
+              <FormLabel>Your Role</FormLabel>
+              <Input
+                name="role"
+                placeholder="Clinical Researcher, CTO, Data Scientist..."
+                value={formData.role}
+                onChange={handleChange}
+              />
+            </FormControl>
 
-              <FormControl>
-                <FormLabel>Organization (Optional)</FormLabel>
-                <Input placeholder="Hospital, lab, startup, university, etc." value={org} onChange={(e) => setOrg(e.target.value)} />
-              </FormControl>
+            <FormControl mb={3}>
+              <FormLabel>Organization</FormLabel>
+              <Input
+                name="organization"
+                placeholder="Company, Institution, or Team"
+                value={formData.organization}
+                onChange={handleChange}
+              />
+            </FormControl>
 
-              <FormControl isRequired isInvalid={!role && touched}>
-                <FormLabel>Your Role</FormLabel>
-                <Input placeholder="Researcher, founder, student, etc." value={role} onChange={(e) => setRole(e.target.value)} />
-                <FormErrorMessage>Role is required.</FormErrorMessage>
-              </FormControl>
+            <FormControl mb={3}>
+              <FormLabel>Why are you interested in Synthetic Ascension?</FormLabel>
+              <Textarea
+                name="motivation"
+                placeholder="Help us understand what brought you here..."
+                value={formData.motivation}
+                onChange={handleChange}
+              />
+            </FormControl>
 
-              <FormControl isRequired isInvalid={!interest && touched}>
-                <FormLabel>Main Area of Interest</FormLabel>
-                <Input
-                  placeholder="e.g., Rare disease modeling, LLM evaluation, clinical QA, FDA prep"
-                  value={interest}
-                  onChange={(e) => setInterest(e.target.value)}
-                />
-                <FormErrorMessage>This field is required.</FormErrorMessage>
-              </FormControl>
+            <FormControl mb={3}>
+              <FormLabel>What use cases are you exploring?</FormLabel>
+              <Textarea
+                name="useCases"
+                placeholder="e.g. Rare disease simulation, FDA QA pipelines, Data augmentation"
+                value={formData.useCases}
+                onChange={handleChange}
+              />
+            </FormControl>
 
-              <FormControl>
-                <FormLabel>What are you working on?</FormLabel>
-                <Textarea
-                  placeholder="If you're building something or exploring a dataset, tell us a bit about it."
-                  value={projectDesc}
-                  onChange={(e) => setProjectDesc(e.target.value)}
-                />
-              </FormControl>
-
-              <FormControl>
-                <FormLabel>How could we help most right now?</FormLabel>
-                <Textarea
-                  placeholder="Access to datasets? Evaluations? Feedback? A sounding board for your idea?"
-                  value={feedbackNeeds}
-                  onChange={(e) => setFeedbackNeeds(e.target.value)}
-                />
-              </FormControl>
-            </Stack>
+            <FormControl mb={3}>
+              <FormLabel>Additional Notes (Optional)</FormLabel>
+              <Textarea
+                name="notes"
+                placeholder="Anything else you'd like us to know?"
+                value={formData.notes}
+                onChange={handleChange}
+              />
+            </FormControl>
           </ModalBody>
 
-          <ModalFooter gap={3}>
-            <Button onClick={onClose} variant="ghost">Cancel</Button>
+          <ModalFooter>
+            <Button onClick={onClose} mr={3} variant="ghost">
+              Cancel
+            </Button>
             <Button
+              colorScheme="purple"
+              bg="#6B46C1"
+              _hover={{ bg: '#553C9A' }}
               onClick={handleSubmit}
-              bg="#6C4DFF"
-              color="white"
-              _hover={{ bg: '#5939e6' }}
-              rounded="xl"
-              px={6}
+              isLoading={submitting}
+              loadingText="Submitting"
             >
               Submit
             </Button>
