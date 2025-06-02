@@ -1,5 +1,6 @@
-// src/components/LeadCaptureModal.jsx
-import React, { useState, useEffect } from "react";
+// frontend/src/components/LeadCaptureModal.jsx
+
+import React, { useState } from "react";
 import {
   Button,
   Modal,
@@ -24,7 +25,11 @@ export default function LeadCaptureModal() {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const toast = useToast();
 
-  // Local form state for controlling inputs and honeypot
+  // ←– Here is your Apps Script “web app” URL. 
+  const scriptURL =
+    "https://script.google.com/macros/s/AKfycbw-ukzXvkbBRRwZuzNn85Xo817oIYqHsTVpCjVY5IpD_hpqASAizevc-WJAg288psdvZw/exec";
+
+  // Local state to hold form inputs
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
@@ -33,28 +38,85 @@ export default function LeadCaptureModal() {
     interest: "",
     useCases: "",
     notes: "",
-    "bot-field": "",
   });
 
-  // Show a toast when the URL contains ?success=true
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    if (params.get("success") === "true") {
+  const [submitting, setSubmitting] = useState(false);
+
+  // Called when the user clicks “Submit”
+  const handleSubmit = async (e) => {
+    e.preventDefault(); // Prevent default form reload
+
+    // Simple front‐end validation:
+    if (!formData.fullName || !formData.email) {
       toast({
-        title: "Submission successful!",
-        description: "Thank you. Your information has been recorded.",
-        status: "success",
-        duration: 4000,
+        title: "Full Name and Email Address are required",
+        status: "warning",
+        duration: 3000,
         isClosable: true,
       });
-      // Remove the query parameter so it doesn't show again on reload
-      params.delete("success");
-      const newUrl =
-        window.location.origin + window.location.pathname + params.toString();
-      window.history.replaceState({}, "", newUrl);
+      return;
     }
-  }, [toast]);
 
+    setSubmitting(true);
+
+    try {
+      // POST JSON directly to your Apps Script endpoint
+      const response = await fetch(scriptURL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          fullName: formData.fullName,
+          email: formData.email,
+          role: formData.role,
+          organization: formData.organization,
+          motivation: formData.interest,
+          useCases: formData.useCases,
+          notes: formData.notes,
+        }),
+      });
+
+      const result = await response.json();
+
+      if (response.ok && result.status === "SUCCESS") {
+        toast({
+          title: "Submission successful!",
+          description: "Thank you. Your information has been recorded.",
+          status: "success",
+          duration: 4000,
+          isClosable: true,
+        });
+
+        // Reset the form fields
+        setFormData({
+          fullName: "",
+          email: "",
+          role: "",
+          organization: "",
+          interest: "",
+          useCases: "",
+          notes: "",
+        });
+        onClose();
+      } else {
+        throw new Error(result.error || "Unknown error from script");
+      }
+    } catch (error) {
+      console.error("Error submitting form:", error);
+      toast({
+        title: "Submission failed",
+        description: error.message || "Please try again later.",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  // Called on every keystroke to update formData
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -83,28 +145,8 @@ export default function LeadCaptureModal() {
           </ModalHeader>
           <ModalCloseButton />
 
-          {/* Netlify Forms integration */}
-          <form
-            name="lead-capture"
-            method="POST"
-            data-netlify="true"
-            netlify-honeypot="bot-field"
-            action="?success=true"
-          >
-            {/* Hidden input to identify the form to Netlify */}
-            <input type="hidden" name="form-name" value="lead-capture" />
-            {/* Honeypot field */}
-            <div style={{ display: "none" }}>
-              <label>
-                Don’t fill this out if you’re human:{" "}
-                <input
-                  name="bot-field"
-                  value={formData["bot-field"]}
-                  onChange={handleChange}
-                />
-              </label>
-            </div>
-
+          {/* ←– Switch to a React onSubmit handler instead of a form “action”  */}
+          <form onSubmit={handleSubmit}>
             <ModalBody>
               <VStack spacing={4} align="stretch">
                 <FormControl isRequired>
@@ -217,6 +259,7 @@ export default function LeadCaptureModal() {
                   variant="ghost"
                   color="gray.700"
                   _hover={{ bg: "gray.100" }}
+                  isDisabled={submitting}
                 >
                   Cancel
                 </Button>
@@ -226,6 +269,8 @@ export default function LeadCaptureModal() {
                   color="white"
                   _hover={{ bg: "#6B46C1" }}
                   _active={{ bg: "#553C9A" }}
+                  isLoading={submitting}
+                  loadingText="Submitting..."
                 >
                   Submit
                 </Button>
