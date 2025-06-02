@@ -1,5 +1,6 @@
+# netlify.toml (at project root)
 [build]
-  publish = "dist"
+  publish = "frontend/dist"
 
 [[redirects]]
   from       = "/api/submit"
@@ -7,3 +8,10 @@
   status     = 200
   force      = true
   conditions = { Method = ["POST","OPTIONS"] }
+
+[[redirects]]
+  from       = "/*"
+  to         = "/index.html"
+  status     = 200
+  force      = true
+  conditions = { Method = ["GET","POST","OPTIONS"] }
