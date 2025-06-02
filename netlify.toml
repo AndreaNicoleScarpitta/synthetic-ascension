@@ -1,6 +1,9 @@
-# netlify.toml (at project root)
+# netlify.toml (project root)
+
 [build]
-  publish = "frontend/dist"
+  base    = "frontend"
+  publish = "dist"
+  command = "npm run build"
 
 [[redirects]]
   from       = "/api/submit"
