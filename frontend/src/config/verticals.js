@@ -1,42 +1,54 @@
 import {
-  FaNotesMedical,
-  FaHospitalUser,
-  FaRobot,
-  FaLock,
-  FaMicroscope,
-  FaFlask,
-} from 'react-icons/fa';
+  BrainCircuit,
+  ShieldCheck,
+  Banknote,
+  GraduationCap,
+  FlaskConical,
+  Users,
+  Microscope,
+  Cpu,
+} from 'lucide-react';
 
 const verticals = [
   {
-    icon: FaNotesMedical,
-    title: 'Pharma & Life Sciences',
-    desc: 'Simulate trial arms, enrich control cohorts, and test inclusion/exclusion criteria.',
+    icon: BrainCircuit,
+    title: 'Clinical AI',
+    desc: 'Train and validate models using diverse, bias-free synthetic EHRs that reflect rare and common conditions alike — without needing PHI.',
   },
   {
-    icon: FaHospitalUser,
-    title: 'Payers & Health Systems',
-    desc: 'Model utilization, test risk algorithms, and explore SDOH at scale.',
+    icon: ShieldCheck,
+    title: 'Regulatory Affairs',
+    desc: 'Demonstrate reproducibility, explainability, and fairness using fully traceable synthetic datasets during FDA or EMA submissions.',
   },
   {
-    icon: FaRobot,
-    title: 'AI Startups & Infra',
-    desc: 'Fuel training pipelines with agent-grade structured clinical data.',
+    icon: Banknote,
+    title: 'Payers & Insurers',
+    desc: 'Run synthetic simulations of claims, risk scores, and coverage policies — safely testing policies before launch or pricing decisions.',
   },
   {
-    icon: FaLock,
-    title: 'Regulators & Quality Teams',
-    desc: 'Pre-test AI systems, simulate rare edge cases, and strengthen regulatory submissions.',
+    icon: FlaskConical,
+    title: 'Pharma & Biotech',
+    desc: 'Simulate trial designs, synthetic cohorts, and adverse event likelihoods early in R&D to shorten discovery-to-protocol timelines.',
   },
   {
-    icon: FaFlask,
-    title: 'Medical Affairs & Market Access',
-    desc: 'Model product effectiveness in synthetic populations to support payer negotiation.',
+    icon: GraduationCap,
+    title: 'Academic Medical Centers',
+    desc: 'Equip students and researchers with privacy-safe EHR datasets for training, benchmarking, and hypothesis testing.',
   },
   {
-    icon: FaMicroscope,
-    title: 'Bioinformatics & RWE Teams',
-    desc: 'Integrate synthetic clinical-genomic data for rare disease modeling and discovery.',
+    icon: Users,
+    title: 'Cross-Institution Research',
+    desc: 'Collaborate on shared synthetic cohorts across hospitals, startups, and regulators without sharing real patient data.',
+  },
+  {
+    icon: Microscope,
+    title: 'Rare Disease Innovation',
+    desc: 'Generate lifelike but simulated cases of low-incidence diseases to support discovery, equity, and early diagnostics.',
+  },
+  {
+    icon: Cpu,
+    title: 'Health IT & Dev Platforms',
+    desc: 'Use realistic but synthetic patient data to develop and test healthcare applications, without compliance blockers.',
   },
 ];
 
