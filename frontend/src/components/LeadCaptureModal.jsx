@@ -34,7 +34,7 @@ export default function LeadCaptureModal() {
   const [submitting, setSubmitting] = useState(false);
 
   const scriptURL =
-    'https://script.google.com/macros/s/AKfycbyhGqZRvB4_2KhF-1mRplFf5hLpJIzeTvFX0M1bjDblRTNJEj7EXN2TztK_452tRClC/exec';
+  'https://script.google.com/macros/s/AKfycbyhGqZRvB4_2KhF-1mRplFf5hLpJIzeTvFX0M1bjDblRTNJEj7EXN2TztK_452tRClC/exec';
 
   const handleChange = (e) => {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
