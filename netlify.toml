@@ -1,6 +1,6 @@
 [build]
   base    = "frontend"
-  publish = "dist"
+  publish = "frontend/dist"
   command = "npm run build"
 
 [[redirects]]
@@ -8,11 +8,11 @@
   to         = "https://script.google.com/macros/s/AKfycbw-ukzXvkbBRRwZuzNn85Xo817oIYqHsTVpCjVY5IpD_hpqASAizevc-WJAg288psdvZw/exec"
   status     = 200
   force      = true
-  conditions = { Method = ["POST","OPTIONS"] }
+  conditions = { Method = ["POST", "OPTIONS"] }
 
 [[redirects]]
   from       = "/*"
   to         = "/index.html"
   status     = 200
   force      = true
-  conditions = { Method = ["GET","POST","OPTIONS"] }
+  conditions = { Method = ["GET", "POST", "OPTIONS"] }
