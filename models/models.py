@@ -55,3 +55,23 @@ class Observation(SQLModel, table=True):
     status: str
     issued: datetime
     created_at: datetime = Field(default_factory=datetime.utcnow)
+
+class TracerRun(SQLModel, table=True):
+    id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
+    use_case: str
+    status: str = Field(default="running")
+    started_at: datetime = Field(default_factory=datetime.utcnow)
+    ended_at: Optional[datetime] = Field(default=None)
+
+class AgentExecution(SQLModel, table=True):
+    id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
+    run_id: uuid.UUID = Field(foreign_key="tracerrun.id")
+    agent_name: str
+    agent_version: str
+    input_path: str
+    output_path: str
+    status: str
+    error_message: Optional[str] = Field(default=None)
+    started_at: datetime = Field(default_factory=datetime.utcnow)
+    ended_at: Optional[datetime] = Field(default=None)
+
